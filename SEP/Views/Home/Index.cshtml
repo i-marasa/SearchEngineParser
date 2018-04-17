@@ -1,0 +1,466 @@
+﻿@{
+    ViewBag.Title = "IDS Search Engine";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<img src="@Url.Content("~/images/logo.jpg")" alt="Search Engine Parser - IDS" class="logo-main img-responsive" />
+
+<div class="row">
+    <div class="col-md-2" id="divLogo-small">
+        <img src="@Url.Content("~/images/logo.jpg")" alt="Search Engine Parser - IDS" class="img-responsive visible-lg visible-md" />
+    </div>
+    <div class="col-md-8 col-md-offset-2" id="divSearchOption">
+        <div class="input-group input-group-lg">
+            <input type="text" placeholder="Search" id="txtSearch" class="input form-control" />
+            <span class="input-group-btn">
+                <button class="btn btn-default" type="button" id="btnSearch"><i class="fa fa-search color-primary"></i></button>
+            </span>
+        </div>
+        <div id="CustomSiteSearch">
+            <div class="input-group input-group-sm margin-top-5">
+                <span class="input-group-btn">
+                    <button class="btn btn-default" type="button" id="btnCancelCustom"><i class="fa fa-remove color-danger"></i></button>
+                </span>
+                <input type="text" placeholder="Search in custom site Ex. 'site.com'" id="txtCustomSite" class="input form-control" />
+            </div>
+        </div>
+    </div>
+    <div class="col-md-8 col-md-offset-2" id="divEnginsOptions">
+        <div class="margin-top pull-left" id="divEngins">
+        </div>
+        <div class="text-right margin-top  padding-5">
+            <a class="btn-link" id="btnCustomSite"><i class="fa fa-filter"></i> Search in custom site</a>
+        </div>
+    </div>
+</div>
+<div class="alert alert-info margin-top padding-10 resultOption">
+    <div class="row">
+        <div class="col-md-9">
+            <input type="text" class="input input-xs form-control enableInResult disabled" id="txtResultSearch" placeholder="Search in Results" />
+        </div>
+        <div class="col-md-3 text-right">
+
+@*@using (Html.BeginForm("exportCSV", "Home", FormMethod.Post))
+    {
+            <input type="hidden" id="jsonData" name="jsonData" />*@
+        <button class="btn btn-xs btn-success btnExport enableInResult disabled"><span class="glyphicon glyphicon-export"></span> Export Results</button>
+            <input type="hidden" id="hdnTitleResult" />
+            
+        </div>
+    </div>
+</div>
+<div class="row margin-top showInResult" id="divResults">
+    <div class="col-lg-12" id="TabsResults">
+        <ul class="nav nav-tabs" role="tablist" id="tablist">
+            @*<li class="tab-btn-default"><a class="btnResTap" data-tab="Google">Google</a></li>
+                <li class="tab-btn-default"><a class="btnResTap" data-tab="Yahoo">Yahoo</a></li>
+                <li class="tab-btn-default"><a class="btnResTap" data-tab="Bing">Bing</a></li>
+                <li class="tab-btn-default"><a class="btnResTap" data-tab="Baidu">Baidu</a></li>
+                <li class="tab-btn-default"><a class="btnResTap" data-tab="Yandex">Yandex</a></li>*@
+        </ul>
+    </div>
+</div>
+<div class="row margin-top" id="divSearchInResult">
+    <div class="col-lg-12" id="SearchInResultContent">
+
+    </div>
+</div>
+<div class="modal fade" id="mod-detail" tabindex="-1" role="dialog" aria-labelledby="Result Detail" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title" id="lblResultTitle"></h4>
+            </div>
+            <div class="modal-body">
+                <div class="bs-callout bs-callout-warning">
+                    <span class="color-success">Character Set:</span>
+                    <span class="color-primary" id="lblCharacterSet"></span>
+                </div>
+                <div class="bs-callout bs-callout-warning">
+                    <span class="color-success">Date of Search:</span>
+                    <span class="color-primary" id="lblDateOfSearch"></span>
+                </div>
+                <div class="bs-callout bs-callout-warning">
+                    <span class="color-success">Href:</span>
+                    <span class="color-primary" id="lblHref"></span>
+                </div>
+                <div class="bs-callout bs-callout-warning">
+                    <span class="color-success">Href Orginal:</span>
+                    <span class="color-primary" id="lblHrefOrginal"></span>
+                </div>
+                <div class="bs-callout bs-callout-warning">
+                    <span class="color-success">From Cache:</span>
+                    <span class="color-primary" id="lblIsFromCache"></span>
+                </div>
+                <div class="bs-callout bs-callout-warning">
+                    <span class="color-success">Active :</span>
+                    <span class="color-primary" id="lblIsWorking"></span>
+                </div>
+                <div class="bs-callout bs-callout-warning">
+                    <span class="color-success">Last Modified:</span>
+                    <span class="color-primary" id="lblLastModified"></span>
+                </div>
+                <div class="bs-callout bs-callout-warning">
+                    <span class="color-success">Link Type:</span>
+                    <span class="color-primary" id="lblLinkType"></span>
+                </div>
+                <div class="bs-callout bs-callout-warning">
+                    <span class="color-success">Link Type Orginal:</span>
+                    <span class="color-primary" id="lblLinkTypeOrginal"></span>
+                </div>
+                <div class="bs-callout bs-callout-warning">
+                    <span class="color-success">Method:</span>
+                    <span class="color-primary" id="lblMethod"></span>
+                </div>
+                <div class="bs-callout bs-callout-warning">
+                    <span class="color-success">Protocol Version:</span>
+                    <span class="color-primary" id="lblProtocolVersion"></span>
+                </div>
+                <div class="bs-callout bs-callout-warning">
+                    <span class="color-success">Request Method:</span>
+                    <span class="color-primary" id="lblRequestMethod"></span>
+                </div>
+                <div class="bs-callout bs-callout-warning">
+                    <span class="color-success">Response Url:</span>
+                    <span class="color-primary" id="lblResponseUrl"></span>
+                </div>
+                <div class="bs-callout bs-callout-warning">
+                    <span class="color-success">Search Engine Used:</span>
+                    <span class="color-primary" id="lblSearchEngineUsed"></span>
+                </div>
+                <div class="bs-callout bs-callout-warning">
+                    <span class="color-success">Server:</span>
+                    <span class="color-primary" id="lblServer"></span>
+                </div>
+                <div class="bs-callout bs-callout-warning">
+                    <span class="color-success">Status:</span>
+                    <span class="color-primary" id="lblStatusDescription"></span>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-sm btn-default" data-dismiss="modal">Close</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+@section styles {
+    <style>
+        #divLogo-small, #divResults, #divSearchInResult, .showInResult, .resultOption, #CustomSiteSearch {
+            display: none;
+        }
+        .dataresult h4 {
+            cursor: pointer;
+        }
+    </style>
+}
+@section scripts {
+    <script type="text/javascript">
+        var ButtonKeys = { "EnterKey": 13 };
+        var searchresult = [];
+        jQuery(document).ready(function () {
+            $('#mainMenu li').removeClass('active');
+            $('#mnHome').addClass('active');
+            getEngines();
+            //$('.Google').iCheck({
+            //    checkboxClass: 'iradio_flat-blue',
+            //    radioClass: 'iradio_flat-blue'
+            //});
+            //$('.Yahoo').iCheck({
+            //    checkboxClass: 'iradio_flat-red',
+            //    radioClass: 'iradio_flat-red'
+            //});
+            //$('.Bing').iCheck({
+            //    checkboxClass: 'iradio_flat-purple',
+            //    radioClass: 'iradio_flat-purple'
+            //});
+            //$('.Baidu').iCheck({
+            //    checkboxClass: 'iradio_flat-green',
+            //    radioClass: 'iradio_flat-green'
+            //});
+            //$('.Yandex').iCheck({
+            //    checkboxClass: 'iradio_flat-orange',
+            //    radioClass: 'iradio_flat-orange'
+            //});
+            $('#btnSearch').click(function () {
+                search();
+            });
+            $('#txtSearch').keypress(function (e) {
+                if (e.which == ButtonKeys.EnterKey) {
+                    $("#btnSearch").trigger('click');
+                }
+            });
+            $(document).on('click', '.btnResTap', function () {
+                var btntab = $(this).data('tab');
+                var divtab = '#tabRes' + btntab;
+                $('#tablist li').removeClass('active').addClass('tab-btn-default');
+                $(this).parent().addClass('active').removeClass('tab-btn-default');
+                $('.resutContent').hide();
+                $(divtab).show();
+            });
+            $(document).on('click', '.btnExport', function () {
+                if (!searchresult.length)
+                    return;
+                //console.log(searchresult);
+                //$('#jsonData').val(JSON.stringify(searchresult));
+                JSONToCSVConvertor(searchresult, $('#hdnTitleResult').val(), true)
+                //window.open("data:text/csv;charset=utf-8," + escape(JSON.stringify(searchresult)))
+                @*console.log(searchresult);
+                $.ajax({
+                    type: "POST",
+                    url: '@Url.Action("export")',
+                    data: JSON.stringify(searchresult),
+                    dataType: 'json',
+                    contentType: 'application/json; charset=utf-8',
+                }).done(function (data) {
+                }).error(function (jqXHR, textStatus, errorThrown) {
+                });*@
+            });
+            $('#txtResultSearch').keyup(function () {
+                //divSearchInResult,divResults
+                var search = $(this).val();
+                if (search.length > 0) {
+                    $('#divResults').hide();
+                    $('#divSearchInResult').show();
+                    $('#SearchInResultContent').html('');
+
+                    $(".dataresult").each(function () {
+                        var data = $(this);
+                        console.log(data.data("text"));
+                        if (data.data("text").toLowerCase().indexOf(search.toLowerCase()) > -1) {
+                            $('#SearchInResultContent').append($(this).clone().removeClass('dataresult'));
+                        }
+                    });
+                }
+                else {
+                    $('#divResults').show();
+                    $('#divSearchInResult').hide();
+                    $('#SearchInResultContent').html('');
+                    return;
+                }
+            });
+            //lblCharacterSet,lblDateOfSearch,lblHref,lblHrefOrginal,lblIsFromCache,
+            //lblIsWorking,lblLastModified,lblLinkType,lblLinkTypeOrginal,lblMethod
+            //lblProtocolVersion,lblRequestMethod,lblResponseUrl,lblSearchEngineUsed,lblServer,lblStatusDescription
+            //CharacterSet,DateOfSearch,Href,HrefOrginal,IsFromCache,
+            //IsWorking,LastModified,LinkType,LinkTypeOrginal,Method
+            //ProtocolVersion,RequestMethod,ResponseUrl,SearchEngineUsed,Server,StatusDescription
+            $(document).on('click', '.dataresult h4', function () {
+                var itemdata = $(this).closest('.bs-callout');
+                $('#lblResultTitle').html($(this).html())
+                $('#lblCharacterSet').html(itemdata.data('characterset'));
+                $('#lblDateOfSearch').html(itemdata.data('dateofsearch'));
+                $('#lblHref').html(itemdata.data('href'));
+                $('#lblHrefOrginal').html(itemdata.data('hreforginal'));
+                $('#lblIsWorking').html(itemdata.data('isworking' + ''));
+                $('#lblIsFromCache').html(itemdata.data('isfrmcache') + '');
+                $('#lblLastModified').html(itemdata.data('lastmodified'));
+                $('#lblLinkType').html(itemdata.data('linktype'));
+                $('#lblLinkTypeOrginal').html(itemdata.data('linktypeorginal'));
+                $('#lblMethod').html(itemdata.data('method'));
+                $('#lblProtocolVersion').html(itemdata.data('protocolversion'));
+                $('#lblRequestMethod').html(itemdata.data('requestmethod'));
+                $('#lblResponseUrl').html(itemdata.data('responseurl'));
+                $('#lblSearchEngineUsed').html(itemdata.data('searchengineused'));
+                $('#lblServer').html(itemdata.data('server'));
+                $('#lblStatusDescription').html(itemdata.data('statusdescription'));
+                $('#mod-detail').modal('show');
+            });
+            $('#btnCancelCustom').click(function () {
+                $('#CustomSiteSearch').hide();
+                $('#txtCustomSite').val('');
+            });
+
+            $('#btnCustomSite').click(function () {
+                $('#CustomSiteSearch').show();
+            });
+            //CustomSiteSearch,btnCancelCustom,txtCustomSite,btnCustomSite// Site: txtSearch
+
+        });
+        var getEngines = function () {
+            $.ajax({
+                type: "GET",
+                url: '@Url.Action("engines")',
+                data: {},
+                dataType: 'json',
+                contentType: 'application/json; charset=utf-8',
+            }).done(function (data) {
+                var item = '';
+                if (!data.res.length) { }
+                else {
+
+                    $('#divEngins').html('');
+                    $.each(data.res, function (index, d) {
+                        item = ' <label class="srch-option">\
+                                    <input type="checkbox" class="checkbox-inline ' + d + '" name="' + d + '" value="' + d + '" checked>\
+                                    ' + d + '\
+                                </label>';
+                        //EngineName,EngineUrl,EngineUrlHttp,EngineUrlHttps,HowManyResults,SearchUrl,
+                        //ReturnFullUrl, ReturnUrlAfter, ReturnUrlBefor
+                        $('#divEngins').append(item);
+                    });
+                }
+                $('.checkbox-inline').iCheck({
+                    checkboxClass: 'iradio_flat-blue',
+                    radioClass: 'iradio_flat-blue'
+                });
+            }).error(function (jqXHR, textStatus, errorThrown) {
+            });
+        }
+        function JSONToCSVConvertor(JSONData, ReportTitle, ShowLabel) {
+            //If JSONData is not an object then JSON.parse will parse the JSON string in an Object
+            var arrData = typeof JSONData != 'object' ? JSON.parse(JSONData) : JSONData;
+
+            var CSV = '';
+            //Set Report title in first row or line
+
+            CSV += ReportTitle + '\r\n\n';
+
+            //This condition will generate the Label/Header
+            if (ShowLabel) {
+                var row = "";
+
+                //This loop will extract the label from 1st index of on array
+                for (var index in arrData[0]) {
+
+                    //Now convert each value to string and comma-seprated
+                    row += index + ',';
+                }
+
+                row = row.slice(0, -1);
+
+                //append Label row with line break
+                CSV += row + '\r\n';
+            }
+
+            //1st loop is to extract each row
+            for (var i = 0; i < arrData.length; i++) {
+                var row = "";
+
+                //2nd loop will extract each column and convert it in string comma-seprated
+                for (var index in arrData[i]) {
+                    row += '"' + arrData[i][index] + '",';
+                }
+
+                row.slice(0, row.length - 1);
+
+                //add a line break after each row
+                CSV += row + '\r\n';
+            }
+
+            if (CSV == '') {
+                alert("Invalid data");
+                return;
+            }
+
+            //Generate a file name
+            var fileName = "";
+            fileName += ReportTitle.replace(/ /g, "_");
+
+            var uri = 'data:text/csv;charset=utf-8,' + escape(CSV);
+  
+
+            //this trick will generate a temp <a /> tag
+            var link = document.createElement("a");
+            link.href = uri;
+
+            //set the visibility hidden so it will not effect on your web-layout
+            link.style = "visibility:hidden";
+            link.download = fileName + ".csv";
+
+            //this part will append the anchor tag and remove it after automatic click
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+        var search = function () {
+            searchresult = [];
+            var word = $('#txtSearch').val();
+            if ($('#txtCustomSite').val())
+                word = 'Site:' + $('#txtCustomSite').val() + ' ' + $('#txtSearch').val();
+            
+            $('#tablist').html('');
+            $('.resutContent').remove();
+            $('#divLogo-small').show();
+            $('.showInResult').show();
+            $('#hdnTitleResult').val(word);
+            $('.enableInResult').addClass('disabled');
+            $('.logo-main').hide();
+            $('#divSearchOption').prop('class', 'col-md-8');
+            $('#divEnginsOptions').prop('class', 'col-md-8');
+            $('#divEngins input:checkbox:checked').each(function (index, item) {
+                getResult(word, $(this).val());
+            });
+        }
+        var getResult = function (word, engin) {
+            $.ajax({
+                type: "GET",
+                url: '@Url.Action("search")',
+                data: { word: word, engin: engin },
+                dataType: 'json',
+                contentType: 'application/json; charset=utf-8',
+            }).done(function (data) {
+                $('.resultOption').show();
+                var btnTab = '<li class="tab-btn-default"><a class="btnResTap" id="btnResTap' + engin + '" data-tab="' + engin + '">' + engin + '</a></li>';
+                $('#tablist').append(btnTab);
+                var items = '';
+                $('.enableInResult').removeClass('disabled');
+                var itemData = '';
+                if (data.res) {
+                    if (data.res.length) {
+                        $.each(data.res, function (index, d) {
+                            searchresult.push(d);
+                            var csscolor = 'primary';
+
+                            var status = '';
+                            if (!d.IsWorking) {
+                                csscolor = 'danger';
+                                status = '<span class="subdetail"><span class="color-danger">Status:</span><span class="color-success">' + d.StatusDescription + '</span></span>';
+                            }
+                            console.log(d.IsFromCache);
+                            itemData = 'data-Text="' + d.Text + '" data-CharacterSet="' + d.CharacterSet + '" data-DateOfSearch="' + d.DateOfSearch + '" data-Href="' + d.Href + '" \
+    data-HrefOrginal="' + d.HrefOrginal + '" data-isfrmcache="' + (d.IsFromCache ? 'Yes' : 'No') + '" data-IsWorking="' + (d.IsWorking ? 'Yes' : 'No') + '" data-LastModified="' + d.LastModified + '" \
+    data-LinkType="' + d.LinkType + '" data-LinkTypeOrginal="' + d.LinkTypeOrginal + '" data-Method="' + d.Method + '" data-ProtocolVersion="' + d.ProtocolVersion + '" \
+    data-RequestMethod="' + d.RequestMethod + '" data-ResponseUrl="' + d.ResponseUrl + '" data-SearchEngineUsed="' + d.SearchEngineUsed + '" \
+    data-Server="' + d.Server + '" data-StatusDescription="' + d.StatusDescription + '" ';
+                            items += '<div class="bs-callout bs-callout-' + csscolor + ' dataresult"  ' + itemData + '>\
+                                <div class="overflow-hidden"><h4 class="pull-left"><i class="' + d.linkIcon + '"></i> ' + d.Text + '</h4>\
+                                        <a href="' + d.Href + '" class="btn btn-link" target="_blank"><i class="fa btnExtralink fa-external-link"></i></a> <span class="color-warning pull-right">' + d.SearchEngineUsed + '</span></div>\
+                            <div class="resultLink"><a href="' + d.Href + '" class="color-warning" target="_blank">' + d.Href + '</a></div>\
+                                <p><span class="subdetail"><span class="color-danger">Active: </span><span class="color-success">' + (d.IsWorking ? 'Yes' : 'No') + '</span></span>\
+                                    <span class="subdetail"><span class="color-danger">From Cache: </span><span class="color-success">' + (d.IsFromCache ? 'Yes' : 'No') + '</span></span>\
+                                    <span class="subdetail"><span class="color-danger">Link Type: </span><span class="color-success">' + d.LinkType + '</span></span>\
+                                    ' + status + '</p>\
+                            </div>';
+                        });
+                    }
+                    else {
+                        items = '<div class="bs-callout bs-callout-warning ">\
+                                <h4>No Results by Search Engine Site \'' + engin + '\'!\</h4>\
+                            </div>';
+                    }
+                }
+                else {
+                    items = '<div class="bs-callout bs-callout-danger">\
+                                <h4>Access to Search Engine Site \'' + engin + '\' was denied!\</h4>\
+                            </div>';
+                }
+                var divResutlt = '<div class="block-tab container-fluid resutContent" id="tabRes' + engin + '">\
+                                    ' + items + '\
+                                  </div>';
+                $('#TabsResults').append(divResutlt);
+
+                $('#btnResTap' + engin).trigger('click');
+            }).error(function (jqXHR, textStatus, errorThrown) {
+            });
+        }
+        var getDateFormate = function (d) {
+
+            var parsedDate = new Date(parseInt(d.substr(6)));
+            return parsedDate.getMonth() + '/' + parsedDate.getDate() + '/' + parsedDate.getFullYear();
+        }
+    </script>
+}

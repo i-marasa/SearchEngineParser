@@ -1,0 +1,350 @@
+﻿@{
+    ViewBag.Title = "Setting - IDS Search Engine";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="row">
+    <div class="col-md-2">
+        <a href="@Url.Action("index","Home")"><img src="@Url.Content("~/images/logo.jpg")" alt="Search Engine Parser - IDS" class="img-responsive" /></a>
+        <br />
+        <a class="btn btn-xs btn-success" id="newEngin"><i class="fa fa-plus-square-o"></i> Add Search Engin</a>
+    </div>
+    <div class="col-md-10">
+        <h3>Search Engines</h3>
+        <div class="listEngines">
+            <div class="bs-callout bs-callout-primary dataresult">
+                <div class="overflow-hidden">
+                    <h4 class="pull-left">
+                        <i class="fa fa-globe"></i> Google
+                    </h4>
+                    <div class="pull-right margin-top-5">
+                        <a class="btn btn-xs btn-primary"><i class="fa fa-edit"></i> Edit</a>
+                        <a class="btn btn-xs btn-danger"><i class="fa fa-trash-o"></i> Remove</a>
+                    </div>
+                </div>
+                <div class="resultLink"><a href="http://www.google.com" class="color-warning" target="_blank">http://www.google.com</a></div>
+                <p>
+                    <span class="subdetail">
+                        <span class="color-danger">Active: </span>
+                        <span class="color-success">Yes</span>
+                    </span>
+                    <span class="subdetail">
+                        <span class="color-danger">From Cache: </span>
+                        <span class="color-success">No</span>
+                    </span>
+                    <span class="subdetail">
+                        <span class="color-danger">Link Type: </span>
+                        <span class="color-success">Link</span>
+                    </span>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="mod-editEngin" tabindex="-1" role="dialog" aria-labelledby="Search Engin" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            @using (Ajax.BeginForm("saveEngin", new AjaxOptions()
+            {
+                HttpMethod = "post",
+                InsertionMode = System.Web.Mvc.Ajax.InsertionMode.Replace,
+                OnSuccess = "getEngines()",
+                OnFailure = "handleError"
+            }))
+            {
+                @Html.AntiForgeryToken()
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                    <h4 class="modal-title" id="lblEditTitle">Add New Search Engin</h4>
+
+                    <input type="hidden" name="isUpdate" id="isUpdate" value="true" />
+                </div>
+                <div class="modal-body">
+                    <div class="form-horizontal">
+                        <div class="form-group">
+                            <label class="control-label col-md-3">Engin Name <i class="fa fa-star reqinput"></i></label>
+                            <div class="col-md-9">
+                                
+                                <input type="hidden" name="EngineNameUpdt" id="EngineNameUpdt" value="" />
+                                <input class="form-control validate[required]" type="text" name="EngineName" id="EngineName" />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-md-3">Engine Url <i class="fa fa-star reqinput"></i></label>
+                            <div class="col-md-9">
+                                <input class="form-control validate[required]" type="text" name="EngineUrl" id="EngineUrl" />
+                            </div>
+                        </div>
+                        @*<div class="form-group">
+                            <label class="control-label col-md-3">Url Http <i class="fa fa-star reqinput"></i></label>
+                            <div class="col-md-9">
+                                <input class="form-control validate[required]" type="text" name="EngineUrlHttp" id="EngineUrlHttp" />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-md-3">Url Https <i class="fa fa-star reqinput"></i></label>
+                            <div class="col-md-9">
+                                <input class="form-control validate[required]" type="text" name="EngineUrlHttps" id="EngineUrlHttps" />
+                            </div>
+                        </div>*@
+                        <div class="form-group">
+                            <label class="control-label col-md-3">Results Count<i class="fa fa-star reqinput"></i></label>
+                            <div class="col-md-9">
+                                <input class="form-control validate[required,custom[number]]" type="text" name="HowManyResults" id="HowManyResults" />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-md-3">SearchUrl <i class="fa fa-star reqinput"></i></label>
+                            <div class="col-md-9">
+                                <input class="form-control validate[required]" type="text" name="SearchUrl" id="SearchUrl" />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-md-offset-3 col-md-9">
+                                <input  type="hidden" name="FullUrl" id="FullUrl" />
+                                <label>
+                                    <input type="checkbox" class="checkbox-inline" id="ReturnFullUrl" name="ReturnFullUrl" />
+                                    Return Full Url
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="control-label col-md-3">Return Url After</label>
+                            <div class="col-md-9">
+                                <input class="form-control" type="text" name="ReturnUrlAfter" id="ReturnUrlAfter" />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-md-3">Return Url Befor</label>
+                            <div class="col-md-9">
+                                <input class="form-control" type="text" name="ReturnUrlBefor" id="ReturnUrlBefor" />
+                            </div>
+                        </div>
+                        
+                    </div>
+                </div>
+                <div class="modal-footer">
+
+                    <button type="submit" class="btn btn-sm btn-primary btnsubmit" data-loading-text="Loading..." id="postEngin">
+                        <i class="fa fa-save"></i> Save
+                    </button>
+                    <button type="button" class="btn btn-sm btn-default" data-dismiss="modal">
+                        <i class="fa fa-remove"></i> Close
+                    </button>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="mod-delete" tabindex="-1" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            @using (Ajax.BeginForm("DeleteEngine", new AjaxOptions()
+            {
+                HttpMethod = "post",
+                InsertionMode = System.Web.Mvc.Ajax.InsertionMode.Replace,
+                OnSuccess = "getEngines()",
+                OnFailure = "handleError"
+            }))
+            {
+
+                @Html.AntiForgeryToken()
+                <div class="modal-body">
+                    <div class="text-center">
+                        <div class="i-circle warning"><i class="fa fa-warning"></i></div>
+                        <input type="hidden" id="hdnDelete" name="del_id" value="" />
+                        <h4>Warning!</h4>
+                        <p>Are you sure you want to delete <strong><span id="lblDeleteTitle"></span></strong> ?</p>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-sm btn-primary btnsubmit" data-loading-text="Loading..." id="delEngin">
+                        <i class="fa fa-trash-o"></i> Delete
+                    </button>
+                    <button type="button" class="btn btn-sm btn-danger" data-dismiss="modal">
+                        <i class="fa fa-remove"></i> Cancel
+                    </button>
+                </div>
+            }
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div>
+
+
+<div class="modal fade" id="mod-alert" tabindex="-1" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            
+                <div class="modal-body">
+                    <div class="text-center">
+                        <div class="i-circle danger"><i class="fa fa-minus"></i></div>
+                        <h4>Error!</h4>
+                        <p id="errorText"></p>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-sm btn-danger" data-dismiss="modal">
+                        Ok
+                    </button>
+                </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div>
+@section styles {
+    <style>
+    </style>
+}
+@section scripts {
+    <script type="text/javascript">
+        jQuery(document).ready(function () {
+            $('#mainMenu li').removeClass('active');
+            $('#mnSetting').addClass('active');
+            getEngines();
+            //
+            $('#newEngin').click(function () {
+                $('#mod-editEngin form')[0].reset();
+                $('#lblEditTitle').html('Add New Engin');
+                $('#mod-editEngin').modal('show');
+                $('#EngineName').prop('disabled', false);
+                $("#isUpdate").val('false');
+            });
+            //
+            $('#ReturnFullUrl').iCheck({
+                checkboxClass: 'iradio_flat-blue',
+                radioClass: 'iradio_flat-blue'
+            });
+            $('#postEngin').click(function () {
+                if ($("form").validationEngine('validate') == false) {
+                    return false;
+                }
+                $("#FullUrl").val($('#ReturnFullUrl').is(":checked"));
+                $(this).button('loading');
+            });
+
+            $('#delEngin').click(function () {
+                $(this).button('loading');
+            });
+            $(document).on('click', '.btnDelete', function () {
+                var element = $(this).closest('.datarow');
+                $('#lblDeleteTitle').html(element.find('.EngineName').html());
+
+                $("#hdnDelete").val(element.find('.EngineName').html());
+                $('#mod-delete').modal('show');
+            });
+            $(document).on('click', '.btnEdit', function () {
+                var element = $(this).closest('.datarow');
+                
+                $("#isUpdate").val('true');
+                $('#EngineName').prop('disabled', true);
+                //EngineName,EngineUrl,EngineUrlHttp,EngineUrlHttps,HowManyResults,SearchUrl,
+                //ReturnFullUrl, ReturnUrlAfter, ReturnUrlBefor
+                $('#lblEditTitle').html('Edit: ' + element.find('.EngineName').html());
+                $("#EngineUrl").val(element.find('.EngineUrl').html());
+                $("#EngineName").val(element.find('.EngineName').html());
+                $("#EngineNameUpdt").val(element.find('.EngineName').html());
+                
+                //$("#EngineUrlHttp").val(element.find('.EngineUrlHttp').html());
+                //$("#EngineUrlHttps").val(element.find('.EngineUrlHttps').html());
+                $("#HowManyResults").val(element.find('.HowManyResults').html());
+                $("#SearchUrl").val(element.find('.SearchUrl').html().replace(element.find('.EngineUrl').html(), ''));
+                $("#ReturnUrlAfter").val(element.find('.ReturnUrlAfter').html());
+                $("#ReturnUrlBefor").val(element.find('.ReturnUrlBefor').html());
+                //ReturnFullUrl
+                if (element.find('.ReturnFullUrl').html().toLowerCase() == 'yes')
+                    $('#ReturnFullUrl').iCheck('check');
+                else
+                    $('#ReturnFullUrl').iCheck('uncheck');
+                $('#mod-editEngin').modal('show');
+            });
+            //btnEdit
+        });
+        var handleError = function (jqXHR, textStatus, errorThrown) {
+            var errormsg = '';
+            if (jqXHR.responseJSON)
+                errormsg = jqXHR.responseJSON.error ? jqXHR.statusText + "<br />" + jqXHR.responseJSON.error : jqXHR.statusText + "<br />" + jqXHR.responseJSON;
+            else
+                errormsg = jqXHR.statusText ? jqXHR.statusText : 'Unknowen Error';
+            console.log(errormsg);
+            $('#errorText').html(errormsg);
+            $('#mod-alert').modal('show');
+            $(".btnsubmit").button('reset');
+            //getalert("error", errormsg, "");
+        }
+        var getEngines = function () {
+            $.ajax({
+                type: "GET",
+                url: '@Url.Action("engines")',
+                data: { },
+                dataType: 'json',
+                contentType: 'application/json; charset=utf-8',
+            }).done(function (data) {
+
+                $('.modal').modal('hide');
+                var item = '';
+                if (!data.res.length)
+                    $('.listEngines').html('<div class="bs-callout bs-callout-danger">\
+                                <h4>No Engines Exist</h4>\
+                            </div>');
+                else {
+
+                    $('.listEngines').html('');
+                    $.each(data.res, function (index, d) {
+                        item = '<div class="bs-callout bs-callout-primary datarow">\
+                <div class="overflow-hidden">\
+                    <h4 class="pull-left">\
+                        <i class="fa fa-globe"></i> <span class="EngineName">' + d.Name + '</span>\
+                    </h4>\
+                    <div class="pull-right margin-top-5">\
+                        <a class="btn btn-xs btn-primary btnEdit"><i class="fa fa-edit"></i> Edit</a>\
+                        <a class="btn btn-xs btn-danger btnDelete"><i class="fa fa-trash-o"></i> Remove</a>\
+                    </div>\
+                </div>\
+                <div class="resultLink"><a href="' + d.EngineUrl + '" class="color-warning EngineUrl" target="_blank">' + d.EngineUrl + '</a></div>\
+                    <p>\
+                        <span class="subdetail">\
+                            <span class="color-danger">Url Http: </span>\
+                            <span class="color-success EngineUrlHttp">' + d.EngineUrlHttp + '</span>\
+                        </span>\
+                        <span class="subdetail">\
+                            <span class="color-danger">Url Https: </span>\
+                            <span class="color-success EngineUrlHttps">' + d.EngineUrlHttps + '</span>\
+                        </span>\
+                        <span class="subdetail">\
+                            <span class="color-danger">Results Count: </span>\
+                            <span class="color-success HowManyResults">' + d.HowManyResults + '</span>\
+                        </span>\
+                        <span class="subdetail">\
+                            <span class="color-danger">Search Url: </span>\
+                            <span class="color-success SearchUrl">' + d.SearchUrl + '</span>\
+                        </span>\
+                        <span class="subdetail">\
+                            <span class="color-danger">Return Full Url: </span>\
+                            <span class="color-success ReturnFullUrl">' + (d.ReturnFullUrl ? 'Yes' : 'No') + '</span>\
+                        </span>\
+                        <span class="subdetail ' + (d.ReturnUrlAfter ? '' : 'hidden') + '">\
+                            <span class="color-danger">Return Url After: </span>\
+                            <span class="color-success ReturnUrlAfter">' + d.ReturnUrlAfter + '</span>\
+                        </span>\
+                        <span class="subdetail ' + (d.ReturnUrlBefor ? '' : 'hidden') + '">\
+                            <span class="color-danger">Return Url Befor: </span>\
+                            <span class="color-success ReturnUrlBefor">' + d.ReturnUrlBefor + '</span>\
+                        </span>\
+                    </p>\
+                </div>';
+                        //EngineName,EngineUrl,EngineUrlHttp,EngineUrlHttps,HowManyResults,SearchUrl,
+                        //ReturnFullUrl, ReturnUrlAfter, ReturnUrlBefor
+                        $('.listEngines').append(item);
+                    });
+                }
+
+                $(".btnsubmit").button('reset');
+            }).error(function (jqXHR, textStatus, errorThrown) {
+                $(".btnsubmit").button('reset');
+            });
+        }
+    </script>
+}
